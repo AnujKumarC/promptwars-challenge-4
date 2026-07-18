@@ -100,3 +100,27 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```bash
 npm run build
 ```
+
+---
+
+## 🏆 Challenge Expectations & Design Architecture
+
+### 1. Chosen Vertical: Smart Stadiums & Tournament Operations
+FIFA Nexus AI is explicitly engineered for **Challenge Vertical 4 (Smart Stadiums & Tournament Operations)**. The platform simulates and structures live coordination layers across all event participants—fans, field volunteers, security officers, concourse paramedics, and match organizers—during high-pressure events like the FIFA World Cup 2026.
+
+### 2. Approach & Logic
+* **Contextual State Engine**: Uses React Context (`AppStateContext`) to bind metrics (gate congestion, attendance rates, parking limits) with real-time incident triggers. When an emergency is activated, the engine immediately propagates evacuation warnings across all dashboard viewports.
+* **Spatial Pathfinder Matrix**: Routes are generated dynamically by parsing selected start terminals and stands block destinations. The map filters nodes based on accessibility rules (wheelchair mode skips stairs) and crowd density indexes (low-crowd mode reroutes around congested zones).
+* **Gemini Dialogue Classification**: Integrates the Gemini API to analyze messages and return instructions. If no API key is set, the endpoint falls back to a regex-based keyword parser that extracts intent (e.g. food requests, toilet locations, gate loads) and returns helpful, localized mock statements.
+
+### 3. How the Solution Works
+* **Role-Based Viewports**: Users select their role (Fan, Volunteer, Security, Medical, Admin) to open a customized operations dashboard.
+* **Interactive SVG Overlay**: The stadium SVG uses glowing path polylines and Framer Motion circles to animate crowd particle movements.
+* **Accessibility suite**: Integrates browser Speech Recognition (dictation) and Speech Synthesis (reading) along with high-contrast stylesheets.
+* **Testing Suite**: Includes full Jest tests verifying component layouts and React context state initializations.
+
+### 4. Assumptions Made
+* **Sensor Availability**: Stadium gates and parking lots are equipped with IoT sensors that stream capacity loads via standard telemetry events.
+* **Network Independence**: The spatial pathfinder algorithm runs entirely client-side, allowing evacuation routing to work offline during emergencies.
+* **Browser Compatibility**: Users use modern HTML5 browsers with native Web Speech API support for dictation and text-to-speech.
+
