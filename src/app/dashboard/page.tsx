@@ -2,11 +2,23 @@
 
 import React, { useState } from "react";
 import { useAppState, UserRole } from "@/context/AppStateContext";
-import { AdminView } from "@/components/dashboard/AdminView";
-import { FanView } from "@/components/dashboard/FanView";
-import { VolunteerView } from "@/components/dashboard/VolunteerView";
-import { SecurityView } from "@/components/dashboard/SecurityView";
-import { MedicalView } from "@/components/dashboard/MedicalView";
+import dynamic from "next/dynamic";
+
+const AdminView = dynamic(() => import("@/components/dashboard/AdminView").then(m => m.AdminView), {
+  loading: () => <div className="h-64 glass animate-pulse rounded-3xl flex items-center justify-center text-xs text-zinc-500 font-bold uppercase tracking-wider border border-white/5">Loading System Deck...</div>
+});
+const FanView = dynamic(() => import("@/components/dashboard/FanView").then(m => m.FanView), {
+  loading: () => <div className="h-64 glass animate-pulse rounded-3xl flex items-center justify-center text-xs text-zinc-500 font-bold uppercase tracking-wider border border-white/5">Loading Fan Portal...</div>
+});
+const VolunteerView = dynamic(() => import("@/components/dashboard/VolunteerView").then(m => m.VolunteerView), {
+  loading: () => <div className="h-64 glass animate-pulse rounded-3xl flex items-center justify-center text-xs text-zinc-500 font-bold uppercase tracking-wider border border-white/5">Loading Shift Grid...</div>
+});
+const SecurityView = dynamic(() => import("@/components/dashboard/SecurityView").then(m => m.SecurityView), {
+  loading: () => <div className="h-64 glass animate-pulse rounded-3xl flex items-center justify-center text-xs text-zinc-500 font-bold uppercase tracking-wider border border-white/5">Loading CCTV Deck...</div>
+});
+const MedicalView = dynamic(() => import("@/components/dashboard/MedicalView").then(m => m.MedicalView), {
+  loading: () => <div className="h-64 glass animate-pulse rounded-3xl flex items-center justify-center text-xs text-zinc-500 font-bold uppercase tracking-wider border border-white/5">Loading Triage Hub...</div>
+});
 import { 
   Users, UserCheck, ShieldAlert, HeartPulse, LayoutDashboard, 
   Bell, Sun, Flame, LogOut, Menu, X 
