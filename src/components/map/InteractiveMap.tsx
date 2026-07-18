@@ -72,6 +72,14 @@ export const InteractiveMap: React.FC = () => {
 
   const [showHeatmap, setShowHeatmap] = useState<boolean>(true);
   const [activePath, setActivePath] = useState<string[]>([]);
+  const [zoom, setZoom] = useState<number>(1);
+  const [panX, setPanX] = useState<number>(0);
+  const [panY, setPanY] = useState<number>(0);
+
+  const minX = panX + (500 - 500 / zoom) / 2;
+  const minY = panY + (500 - 500 / zoom) / 2;
+  const widthHeight = 500 / zoom;
+  const dynamicViewBox = `${minX} ${minY} ${widthHeight} ${widthHeight}`;
 
   useEffect(() => {
     const startNode = NODES.find(n => n.name === navStart || n.id === navStart)?.id || "ent_a";
@@ -152,10 +160,73 @@ export const InteractiveMap: React.FC = () => {
         </div>
 
         {/* Stadium Layout */}
-        <div className="relative flex-1 w-full flex items-center justify-center py-4 bg-zinc-950/60 rounded-2xl border border-white/[0.02]">
+        <div className="relative flex-1 w-full flex items-center justify-center py-4 bg-zinc-950/60 rounded-2xl border border-white/[0.02] overflow-hidden">
+          
+          {/* Zoom controls */}
+          <div className="absolute top-4 right-4 z-10 flex flex-col gap-1 bg-zinc-900/80 border border-zinc-800 p-1 rounded-xl backdrop-blur-md shadow-lg">
+            <button
+              onClick={() => setZoom(z => Math.min(4, z + 0.3))}
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-zinc-850 text-zinc-300 font-bold text-xs active:scale-95 transition-all"
+              title="Zoom In"
+            >
+              +
+            </button>
+            <button
+              onClick={() => setZoom(z => Math.max(1, z - 0.3))}
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-zinc-850 text-zinc-300 font-bold text-xs active:scale-95 transition-all"
+              title="Zoom Out"
+            >
+              −
+            </button>
+            <button
+              onClick={() => { setZoom(1); setPanX(0); setPanY(0); }}
+              className="w-6 h-6 flex items-center justify-center rounded hover:bg-zinc-850 text-[8px] text-zinc-400 font-bold active:scale-95 transition-all uppercase"
+              title="Reset View"
+            >
+              Rst
+            </button>
+          </div>
+
+          {/* Pan controls */}
+          <div className="absolute bottom-4 left-4 z-10 grid grid-cols-3 gap-0.5 bg-zinc-900/80 border border-zinc-800 p-1 rounded-xl backdrop-blur-md shadow-lg w-18">
+            <div />
+            <button
+              onClick={() => setPanY(y => Math.max(-150, y - 30))}
+              className="w-4.5 h-4.5 flex items-center justify-center rounded hover:bg-zinc-850 text-zinc-400 font-bold text-[8px]"
+              title="Pan Up"
+            >
+              ▲
+            </button>
+            <div />
+            <button
+              onClick={() => setPanX(x => Math.max(-150, x - 30))}
+              className="w-4.5 h-4.5 flex items-center justify-center rounded hover:bg-zinc-850 text-zinc-400 font-bold text-[8px]"
+              title="Pan Left"
+            >
+              ◀
+            </button>
+            <div />
+            <button
+              onClick={() => setPanX(x => Math.min(150, x + 30))}
+              className="w-4.5 h-4.5 flex items-center justify-center rounded hover:bg-zinc-850 text-zinc-400 font-bold text-[8px]"
+              title="Pan Right"
+            >
+              ▶
+            </button>
+            <div />
+            <button
+              onClick={() => setPanY(y => Math.min(150, y + 30))}
+              className="w-4.5 h-4.5 flex items-center justify-center rounded hover:bg-zinc-850 text-zinc-400 font-bold text-[8px]"
+              title="Pan Down"
+            >
+              ▼
+            </button>
+            <div />
+          </div>
+
           <svg
-            viewBox="0 0 500 500"
-            className="w-full max-w-[440px] aspect-square drop-shadow-[0_0_35px_rgba(0,0,0,0.6)]"
+            viewBox={dynamicViewBox}
+            className="w-full max-w-[440px] aspect-square drop-shadow-[0_0_35px_rgba(0,0,0,0.6)] transition-all duration-300"
           >
             {/* Outer Rings */}
             <circle
@@ -393,7 +464,7 @@ export const InteractiveMap: React.FC = () => {
                   { id: "wheelchair", label: "Accessible", icon: Accessibility, danger: false },
                   { id: "low_crowd", label: "Low Crowd", icon: Users, danger: false },
                   { id: "evacuation", label: "Evac Exit", icon: Flame, danger: true },
-                ] as { id: RouteType; label: string; icon: any; danger: boolean }[]
+                ] as { id: RouteType; label: string; icon: React.ComponentType<{ className?: string }>; danger: boolean }[]
               ).map((mode) => {
                 const Icon = mode.icon;
                 const isSelected = routeType === mode.id || (activeEmergency !== "none" && mode.id === "evacuation");

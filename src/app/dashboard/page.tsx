@@ -67,7 +67,7 @@ export default function DashboardPage() {
     }
   };
 
-  const menuItems: { role: UserRole; label: string; icon: any }[] = [
+  const menuItems: { role: UserRole; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
     { role: "admin", label: "Admin Console", icon: LayoutDashboard },
     { role: "fan", label: "Fan Portal", icon: Users },
     { role: "volunteer", label: "Volunteer Grid", icon: UserCheck },

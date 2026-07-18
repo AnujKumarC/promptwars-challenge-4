@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { AnimatedGradient } from "@/components/ui/AnimatedGradient";
 import { 
   Sparkles, Navigation2, Cpu, Eye, Leaf, 
-  ArrowRight, Flame, ShieldCheck, ShieldAlert,
+  ArrowRight, ShieldCheck, ShieldAlert,
   ChevronDown
 } from "lucide-react";
 

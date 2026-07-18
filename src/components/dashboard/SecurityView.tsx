@@ -5,8 +5,8 @@ import { useAppState } from "@/context/AppStateContext";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { 
-  ShieldAlert, Shield, ShieldCheck, Eye, EyeOff, 
-  MapPin, AlertTriangle, Send, UserCheck, Flame 
+  ShieldAlert, ShieldCheck, Eye, 
+  MapPin, AlertTriangle, Send, UserCheck 
 } from "lucide-react";
 
 export const SecurityView: React.FC = () => {

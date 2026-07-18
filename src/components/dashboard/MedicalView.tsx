@@ -5,8 +5,8 @@ import { useAppState } from "@/context/AppStateContext";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { 
-  HeartPulse, Activity, Ambulance, MapPin, 
-  Clock, AlertCircle, HelpCircle, Send, CheckCircle2 
+  HeartPulse, Ambulance, MapPin, 
+  AlertCircle, Send, CheckCircle2 
 } from "lucide-react";
 
 export const MedicalView: React.FC = () => {
@@ -18,7 +18,7 @@ export const MedicalView: React.FC = () => {
   const [priority, setPriority] = useState<"low" | "medium" | "high" | "critical">("medium");
 
   // Ambulance tracking coordinates simulation
-  const [ambulanceProgress, setAmbulanceProgress] = useState<number>(64); // 0 to 100
+  const [ambulanceProgress] = useState<number>(64); // 0 to 100
 
   const handleTriageSubmit = (e: React.FormEvent) => {
     e.preventDefault();

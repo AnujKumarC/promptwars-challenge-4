@@ -3,6 +3,7 @@
 import React from "react";
 import { useAppState } from "@/context/AppStateContext";
 import FloatingAssistant from "@/components/chat/FloatingAssistant";
+import CommandPalette from "@/components/ui/CommandPalette";
 
 export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const { highContrast, fontSize, theme } = useAppState();
@@ -20,6 +21,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     >
       {children}
       <FloatingAssistant />
+      <CommandPalette />
     </div>
   );
 }

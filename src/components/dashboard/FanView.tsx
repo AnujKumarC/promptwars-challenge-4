@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { useAppState } from "@/context/AppStateContext";
+import { useAppState, FoodItem } from "@/context/AppStateContext";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { InteractiveMap } from "@/components/map/InteractiveMap";
 import { 
-  Utensils, MapPin, Bus, Navigation, Star, 
-  Accessibility, Check, Sparkles, UserCheck 
+  Utensils, Bus, Star, Accessibility, Sparkles 
 } from "lucide-react";
 
 export const FanView: React.FC = () => {
@@ -20,13 +19,11 @@ export const FanView: React.FC = () => {
     fontSize,
     setFontSize,
     screenReader,
-    setScreenReader,
-    theme,
-    setTheme
+    setScreenReader
   } = useAppState();
 
   const [dietFilter, setDietFilter] = useState<string>("All");
-  const [selectedFood, setSelectedFood] = useState<any>(null);
+  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(null);
 
   const diets = ["All", "Veg", "Vegan", "Halal", "Jain"];
   

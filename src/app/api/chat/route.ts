@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
         });
 
         // Format history for Gemini API
-        const contents = messages.map((m: any) => ({
+        const contents = messages.map((m: { role: string; content: string }) => ({
           role: m.role === "user" ? "user" : "model",
           parts: [{ text: m.content }]
         }));
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
         const responseText = result.response.text();
         
         return NextResponse.json({ content: responseText });
-      } catch (geminiError: any) {
+      } catch (geminiError) {
         console.error("Gemini API Error, falling back to local simulator:", geminiError);
         // Fail down to simulator if API keys fails due to quotes/format
       }
@@ -114,8 +114,9 @@ export async function POST(req: NextRequest) {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     return NextResponse.json({ content: responseText });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Chat API Route Error:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    const errorMsg = error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }

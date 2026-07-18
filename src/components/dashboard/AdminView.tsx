@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { InteractiveMap } from "@/components/map/InteractiveMap";
 import { PremiumLineChart, PremiumBarChart, PremiumDonutChart } from "@/components/analytics/PremiumCharts";
 import { 
-  Users, Activity, Flame, ShieldAlert, Cpu, 
-  Leaf, Thermometer, Droplet, Clock, Navigation, AlertTriangle 
+  Users, Activity, Flame, Cpu, 
+  Leaf, Thermometer, Droplet, Navigation, AlertTriangle 
 } from "lucide-react";
 
 export const AdminView: React.FC = () => {

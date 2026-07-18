@@ -54,7 +54,7 @@ export default function AuthPage() {
     router.push("/dashboard");
   };
 
-  const rolesList: { role: UserRole; title: string; desc: string; icon: any; color: string }[] = [
+  const rolesList: { role: UserRole; title: string; desc: string; icon: React.ComponentType<{ className?: string }>; color: string }[] = [
     { role: "fan", title: "Match Fan", desc: "Access food orders, wheelchair routes, seats & maps.", icon: Users, color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
     { role: "volunteer", title: "Field Volunteer", desc: "Track tasks, register attendance & collect performance scores.", icon: User, color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
     { role: "security", title: "Security Officer", desc: "Report incidents, view restricted area cameras & face logs.", icon: ShieldAlert, color: "text-red-400 bg-red-500/10 border-red-500/20" },
@@ -227,7 +227,7 @@ export default function AuthPage() {
                   onClick={() => setOtp(["1", "2", "3", "4"])}
                   className="text-xs text-zinc-500 hover:text-zinc-300 font-bold text-center mt-1"
                 >
-                  Resend code (Simulate Fill "1234")
+                  Resend code (Simulate Fill &quot;1234&quot;)
                 </button>
               </div>
             </form>

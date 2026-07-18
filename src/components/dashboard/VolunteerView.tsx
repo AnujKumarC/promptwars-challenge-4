@@ -5,7 +5,7 @@ import { useAppState } from "@/context/AppStateContext";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { 
-  ClipboardList, CheckCircle2, UserCheck, ShieldAlert, 
+  ClipboardList, CheckCircle2, 
   MapPin, Award, Flame, AlertCircle, Calendar 
 } from "lucide-react";
 
@@ -53,7 +53,7 @@ export const VolunteerView: React.FC = () => {
 
       {/* Emergency dispatch box */}
       {activeEmergency !== "none" && (
-        <Card variant="glow" glowColor="red" hoverEffect={true} className="border-red-500/30">
+        <Card variant="glow" glowColor="rose" hoverEffect={true} className="border-red-500/30">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0 animate-pulse">
               <Flame className="w-5 h-5 text-red-500" />
@@ -167,7 +167,7 @@ export const VolunteerView: React.FC = () => {
             <div className="mt-4 pt-4 border-t border-white/5 bg-slate-950/25 p-3.5 rounded-xl border border-white/5">
               <span className="text-[10px] font-bold text-purple-400 uppercase tracking-widest block mb-1">AI Coaching Tip</span>
               <p className="text-[10px] text-slate-300 leading-relaxed">
-                "Crowd counts near the North Food Court are shifting. Directing fans to seat paths early will score you an extra 100 points."
+                &quot;Crowd counts near the North Food Court are shifting. Directing fans to seat paths early will score you an extra 100 points.&quot;
               </p>
             </div>
           </Card>

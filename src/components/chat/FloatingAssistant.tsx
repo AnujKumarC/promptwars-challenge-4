@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { MessageSquare, X, Send, Mic, Volume2, VolumeX, ShieldAlert, Navigation2, HelpCircle } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { MessageSquare, X, Send, Mic, Volume2, VolumeX, ShieldAlert, HelpCircle } from "lucide-react";
 import { useAppState } from "@/context/AppStateContext";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -9,6 +9,22 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+}
+
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: () => void;
+  onend: () => void;
+  onresult: (event: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void;
+  start: () => void;
+  stop: () => void;
+}
+
+interface SpeechWindow extends Window {
+  SpeechRecognition?: new () => SpeechRecognitionInstance;
+  webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
 }
 
 const QUICK_TEMPLATES = [
@@ -36,7 +52,7 @@ export const FloatingAssistant: React.FC = () => {
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -45,36 +61,10 @@ export const FloatingAssistant: React.FC = () => {
     }
   }, [messages, isOpen]);
 
-  // Speech Recognition Setup (Web Speech API)
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const rec = new SpeechRecognition();
-        rec.continuous = false;
-        rec.interimResults = false;
-        
-        // Match language
-        rec.lang = language === "hi" ? "hi-IN" : language === "es" ? "es-ES" : "en-US";
-
-        rec.onstart = () => setIsListening(true);
-        rec.onend = () => setIsListening(false);
-        rec.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          if (transcript) {
-            setInput(transcript);
-            handleSendMessage(transcript);
-          }
-        };
-        recognitionRef.current = rec;
-      }
-    }
-  }, [language]);
-
   // Speech Synthesis Output (Text to Speech)
-  const speakText = (text: string) => {
+  const speakText = useCallback((text: string) => {
     if (typeof window === "undefined" || !voiceEnabled) return;
-    window.speechSynthesis.cancel(); // Stop current speech
+    window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = language === "hi" ? "hi-IN" : language === "es" ? "es-ES" : "en-US";
@@ -84,33 +74,18 @@ export const FloatingAssistant: React.FC = () => {
     utterance.onerror = () => setIsSpeaking(false);
     
     window.speechSynthesis.speak(utterance);
-  };
+  }, [language, voiceEnabled]);
 
-  const toggleListening = () => {
-    if (!recognitionRef.current) {
-      alert("Speech recognition is not supported on this browser.");
-      return;
-    }
-    if (isListening) {
-      recognitionRef.current.stop();
-    } else {
-      window.speechSynthesis.cancel(); // Stop talking before listening
-      recognitionRef.current.start();
-    }
-  };
-
-  const handleSendMessage = async (textToSend: string) => {
+  const handleSendMessage = useCallback(async (textToSend: string) => {
     const trimmed = textToSend.trim();
     if (!trimmed) return;
 
-    // Add user message
     const userMsg: Message = { role: "user", content: trimmed, timestamp: new Date() };
     setMessages((prev) => [...prev, userMsg]);
     setInput(" ");
     setIsLoading(true);
 
     try {
-      // Build conversation history
       const history = [...messages, userMsg].map((m) => ({
         role: m.role,
         content: m.content,
@@ -147,6 +122,44 @@ export const FloatingAssistant: React.FC = () => {
       ]);
     } finally {
       setIsLoading(false);
+    }
+  }, [messages, language, speakText]);
+
+  // Speech Recognition Setup (Web Speech API)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const SpeechWindowImpl = window as unknown as SpeechWindow;
+      const SpeechRecognition = SpeechWindowImpl.SpeechRecognition || SpeechWindowImpl.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const rec = new SpeechRecognition();
+        rec.continuous = false;
+        rec.interimResults = false;
+        rec.lang = language === "hi" ? "hi-IN" : language === "es" ? "es-ES" : "en-US";
+
+        rec.onstart = () => setIsListening(true);
+        rec.onend = () => setIsListening(false);
+        rec.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          if (transcript) {
+            setInput(transcript);
+            handleSendMessage(transcript);
+          }
+        };
+        recognitionRef.current = rec;
+      }
+    }
+  }, [language, handleSendMessage]);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert("Speech recognition is not supported on this browser.");
+      return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      window.speechSynthesis.cancel();
+      recognitionRef.current.start();
     }
   };
 
@@ -196,7 +209,11 @@ export const FloatingAssistant: React.FC = () => {
                   }`}
                   title="Toggle Voice Output"
                 >
-                  {voiceEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
+                  {voiceEnabled ? (
+                    <Volume2 className={`w-3.5 h-3.5 ${isSpeaking ? "animate-pulse text-indigo-400" : ""}`} />
+                  ) : (
+                    <VolumeX className="w-3.5 h-3.5" />
+                  )}
                 </button>
                 {/* Close Button */}
                 <button
@@ -240,7 +257,7 @@ export const FloatingAssistant: React.FC = () => {
                     }`}
                   >
                     {m.content}
-                    <span className="block text-[8px] text-slate-500 mt-1 text-right">
+                    <span className="block text-[8px] text-slate-500 mt-1 text-right font-semibold">
                       {m.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
@@ -282,7 +299,6 @@ export const FloatingAssistant: React.FC = () => {
 
             {/* Input Bar */}
             <form onSubmit={handleFormSubmit} className="p-4 border-t border-white/10 flex gap-2 items-center bg-slate-950/40">
-              {/* Language Selector */}
               <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value)}
@@ -301,7 +317,6 @@ export const FloatingAssistant: React.FC = () => {
                 className="flex-1 bg-slate-900/60 border border-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 focus:ring-1 focus:ring-blue-500 outline-none placeholder-slate-500"
               />
 
-              {/* Speech to text mic */}
               <button
                 type="button"
                 onClick={toggleListening}
@@ -337,7 +352,6 @@ export const FloatingAssistant: React.FC = () => {
         <div className="absolute inset-0 rounded-full bg-indigo-500/20 blur-md -z-10 animate-pulse" />
         <MessageSquare className="w-6 h-6" />
         
-        {/* Urgent indicator if emergency is active */}
         {activeEmergency !== "none" && (
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-bold text-white animate-bounce border border-white">
             !
