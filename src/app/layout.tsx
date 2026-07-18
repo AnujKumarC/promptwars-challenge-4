@@ -17,7 +17,16 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "FIFA Nexus AI - Smart Stadium & Tournament Operations Platform",
-  description: "AI-powered tournament command center and fan guide for the FIFA World Cup 2026.",
+  description: "AI-powered tournament command center and fan guide for the FIFA World Cup 2026. Custom spatial pathfinding, computer vision surveillance flows, and multilingual Gemini voice assistants.",
+  keywords: ["FIFA", "World Cup 2026", "Smart Stadium", "Generative AI", "Tournament Operations", "Pathfinding", "Security Surveillance", "Gemini API"],
+  authors: [{ name: "Anuj Kumar Choudhary" }],
+  robots: "index, follow",
+  openGraph: {
+    title: "FIFA Nexus AI - Smart Stadium Platform",
+    description: "Generative AI-powered tournament command center and fan experience guide.",
+    type: "website",
+    locale: "en_US",
+  }
 };
 
 export default function RootLayout({
